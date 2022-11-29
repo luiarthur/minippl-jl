@@ -1,21 +1,17 @@
 run(d::Distribution) = rand(d)
-
 model(am::AbstractModel; kwargs...) = nothing
+stack(am::AbstractModel) = am._stack
 
 function run(am::AbstractModel; kwargs...)
     return model(am; kwargs...)
 end
-
-stack(am::AbstractModel) = am._stack
 
 function apply_stack(am::AbstractModel, msg::Message)
     for handler in reverse(am._stack)
         process(handler, msg)
     end
 
-    if isnothing(msg.value)
-        msg.value = run(msg.fn)
-    end
+    isnothing(msg.value) && (msg.value = run(msg.fn))
 
     for handler in am._stack
         postprocess(handler, msg)
@@ -24,14 +20,8 @@ function apply_stack(am::AbstractModel, msg::Message)
     return msg
 end
 
-function rv(am::AbstractModel,
-            name::Symbol,
-            dist::Distribution;
-            obs = nothing)
-
-    if length(am._stack) == 0
-        return rand(dist)
-    else
+function rv(am::AbstractModel, name::Symbol, dist::Distribution; obs = nothing)
+    if length(am._stack) > 0
         msg = Message(
             name = name,
             fn = dist,
@@ -40,10 +30,16 @@ function rv(am::AbstractModel,
         )
         msg = apply_stack(am, msg)
         return msg.value
+    else
+        return rand(dist)
     end
 end
 
-function Distributions.logpdf(am::AbstractModel, state::Dict{Symbol, <:Any}; kwargs...)
+function Distributions.logpdf(
+    am::AbstractModel,
+    state::Dict{Symbol, <:Any};
+    kwargs...
+)
     t = get(trace(condition(am, state)); kwargs...)
 
     lp = 0.0
