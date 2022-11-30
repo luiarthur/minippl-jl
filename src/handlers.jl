@@ -12,9 +12,7 @@ function run(h::Handler; kwargs...)
 end
 
 # Trace methods.
-function postprocess(h::trace, msg::Message)
-    h.result[msg.name] = msg
-end
+postprocess(h::trace, msg::Message) = (h.result[msg.name] = msg)
 function get(h::trace; kwargs...)
     run(h; kwargs...)
     return h.result

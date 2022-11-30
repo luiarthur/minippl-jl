@@ -1,42 +1,42 @@
 run(d::Distribution) = rand(d)
-run(am::AbstractModel; kwargs...) = model(am; kwargs...)
-model(am::AbstractModel; kwargs...) = nothing
-stack(am::AbstractModel) = am._stack
+run(m::Model; kwargs...) = model(m; kwargs...)
+model(m::Model; kwargs...) = nothing
+stack(m::Model) = m._stack
 
-function apply_stack(am::AbstractModel, msg::Message)::Message
-    for handler in reverse(am._stack)
+function apply_stack(m::Model, msg::Message)::Message
+    for handler in reverse(m._stack)
         process(handler, msg)
     end
 
     isnothing(msg.value) && (msg.value = run(msg.fn))
 
-    for handler in am._stack
+    for handler in m._stack
         postprocess(handler, msg)
     end
 
     return msg
 end
 
-function rv(am::AbstractModel, name::Symbol, dist::Distribution; obs = nothing)
-    if length(am._stack) > 0
+function rv(m::Model, name::Symbol, dist::Distribution; obs = nothing)
+    if length(m._stack) > 0
         msg = Message(
             name = name,
             fn = dist,
             value = obs,
             observed = !isnothing(obs)
         )
-        return apply_stack(am, msg).value
+        return apply_stack(m, msg).value
     else
         return rand(dist)
     end
 end
 
 function Distributions.logpdf(
-    am::AbstractModel,
+    m::Model,
     state::Dict{Symbol, <:Any};
     kwargs...
 )
-    t = get(trace(condition(am, state)); kwargs...)
+    t = get(trace(condition(m, state)); kwargs...)
     lp = 0.0
     for param in values(t)
         if param.type === :rv

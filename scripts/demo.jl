@@ -5,15 +5,13 @@ import PPL
 import PPL: trace, condition, get
 import Random: seed!
 
-struct NormalModel <: PPL.AbstractModel
-    _stack::PPL.HandlerStack
-end
-function PPL.model(m::NormalModel; x)
+struct NormalModel end
+function PPL.model(m::PPL.Model{NormalModel}; x)
     mu = PPL.rv(m, :mu, Normal(0, 1))
     sigma = PPL.rv(m, :sigma, Uniform(0, 1))
     PPL.rv(m, :x, Normal(mu, sigma), obs=x)
 end
-nm = NormalModel()
+nm = PPL.Model{NormalModel}()
 # Want to abbreviate the above to:
 # @model function NormalModel(x)
 #     mu = PPL.rv(:mu, Normal())

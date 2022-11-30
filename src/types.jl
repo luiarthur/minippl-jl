@@ -1,16 +1,16 @@
 abstract type Handler end
-const HandlerStack = Vector{Handler}
 
 """
-AbstractModel has 
-- field:  _stack::HandlerStack
-- method: model(; kwargs...)
+Methods to implement:
+- `model(::Model{T}; kwargs...)`
 """
-abstract type AbstractModel end
-(::Type{T})() where {T<:AbstractModel} = T(HandlerStack())
+struct Model{T}
+    _stack::Vector{Handler}
+end
+Model{T}() where T = Model{T}(Handler[])
 
 struct trace{
-    F <: Union{<:Handler, <:AbstractModel},
+    F <: Union{<:Handler, <:Model},
     R <: Dict{Symbol, <:Any}
 } <: Handler
     fn::F
@@ -19,7 +19,7 @@ end
 trace(fn) = trace(fn, Dict{Symbol, Any}())
 
 struct condition{
-    F <: Union{<:Handler, <:AbstractModel},
+    F <: Union{<:Handler, <:Model},
     S <: Dict{Symbol, <:Any}
 } <: Handler
     fn::F
