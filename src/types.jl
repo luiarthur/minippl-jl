@@ -1,11 +1,13 @@
 abstract type Handler end
+const HandlerStack = Vector{Handler}
 
 """
 AbstractModel has 
-- field:  _stack::Vector{Handler}
+- field:  _stack::HandlerStack
 - method: model(; kwargs...)
 """
 abstract type AbstractModel end
+(::Type{T})() where {T<:AbstractModel} = T(HandlerStack())
 
 struct trace{
     F <: Union{<:Handler, <:AbstractModel},
