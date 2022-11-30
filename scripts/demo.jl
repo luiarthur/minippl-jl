@@ -14,6 +14,12 @@ function PPL.model(m::NormalModel; x)
     PPL.rv(m, :x, Normal(mu, sigma), obs=x)
 end
 nm = NormalModel(PPL.Handler[])
+# Want to abbreviate the above to:
+# @model function NormalModel(x)
+#     mu = PPL.rv(:mu, Normal())
+#     sigma = PPL.rv(:sigma, Uniform(0, 1))
+#     PPL.rv(:x, Normal(mu, sigma), obs=x)
+# end
 
 seed!(0)
 true_dist = Normal(3, 0.5)
