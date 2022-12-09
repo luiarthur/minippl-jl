@@ -1,16 +1,16 @@
 run(d::Distribution) = rand(d)
 run(m::Model; kwargs...) = model(m; kwargs...)
 model(m::Model; kwargs...) = nothing
-stack(m::Model) = m._stack
+stack(m::Model) = m.stack
 
 function apply_stack(m::Model, msg::Message)::Message
-    for handler in reverse(m._stack)
+    for handler in reverse(m.stack)
         process(handler, msg)
     end
 
     isnothing(msg.value) && (msg.value = run(msg.fn))
 
-    for handler in m._stack
+    for handler in m.stack
         postprocess(handler, msg)
     end
 
@@ -18,7 +18,7 @@ function apply_stack(m::Model, msg::Message)::Message
 end
 
 function rv(m::Model, name::Symbol, dist::Distribution; obs = nothing)
-    if length(m._stack) > 0
+    if length(m.stack) > 0
         msg = Message(
             name = name,
             fn = dist,

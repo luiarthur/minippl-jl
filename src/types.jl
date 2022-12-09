@@ -5,7 +5,7 @@ Methods to implement:
 - `model(::Model{T}; kwargs...)`
 """
 struct Model{T}
-    _stack::Vector{Handler}
+    stack::Vector{Handler}
 end
 Model{T}() where T = Model{T}(Handler[])
 
