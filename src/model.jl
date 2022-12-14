@@ -1,6 +1,5 @@
-run(d::Distribution) = rand(d)
-run(m::Model; kwargs...) = model(m; kwargs...)
-model(m::Model; kwargs...) = nothing
+model(::Model; kwargs...) = nothing
+(m::Model)(; kwargs...) = model(m; kwargs...)
 stack(m::Model) = m.stack
 
 function apply_stack(m::Model, msg::Message)::Message
@@ -8,7 +7,7 @@ function apply_stack(m::Model, msg::Message)::Message
         process(handler, msg)
     end
 
-    isnothing(msg.value) && (msg.value = run(msg.fn))
+    isnothing(msg.value) && (msg.value = rand(msg.fn))
 
     for handler in m.stack
         postprocess(handler, msg)

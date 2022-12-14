@@ -1,20 +1,18 @@
 # Handler methods.
 stack(h::Handler) = stack(h.fn)
-Base.push!(h::Handler) = push!(stack(h), h)
-Base.pop!(h::Handler) = @assert pop!(stack(h)) === h
 process(h::Handler, msg::Message) = nothing
 postprocess(h::Handler, msg::Message) = nothing
-function run(h::Handler; kwargs...)
-    push!(h)
-    result = run(h.fn; kwargs...)
-    pop!(h)
+function (h::Handler)(; kwargs...)
+    push!(stack(h), h)
+    result = h.fn(; kwargs...)
+    @assert pop!(stack(h)) === h
     return result
 end
 
 # Trace methods.
 postprocess(h::trace, msg::Message) = (h.result[msg.name] = msg)
 function get(h::trace; kwargs...)
-    run(h; kwargs...)
+    h(; kwargs...)
     return h.result
 end
 
