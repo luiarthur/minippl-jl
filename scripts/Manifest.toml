@@ -200,7 +200,7 @@ uuid = "90014a1f-27ba-587c-ab20-58faa44d9150"
 version = "0.11.16"
 
 [[deps.PPL]]
-deps = ["Distributions", "StatsFuns"]
+deps = ["Distributions", "Random", "StatsFuns"]
 path = ".."
 uuid = "4e418e22-bd53-422b-8dbc-c9bbe8b42b5d"
 version = "0.1.0"

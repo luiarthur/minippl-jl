@@ -4,10 +4,11 @@ abstract type Handler end
 Methods to implement:
 - `model(::Model{T}; kwargs...)`
 """
-struct Model{T}
+struct Model{T, R<:AbstractRNG}
     stack::Vector{Handler}
+    rng::R
 end
-Model{T}() where T = Model{T}(Handler[])
+Model{T}(rng::R = GLOBAL_RNG) where {T, R} = Model{T, R}(Handler[], rng)
 
 struct trace{
     F <: Union{<:Handler, <:Model},
