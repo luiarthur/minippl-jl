@@ -1,6 +1,6 @@
 module PPL
 
-using Distributions
+import Distributions: logpdf, Distribution
 
 include("types.jl")
 include("handlers.jl")

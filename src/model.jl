@@ -30,7 +30,7 @@ function rv(m::Model, name::Symbol, dist::Distribution; obs = nothing)
     end
 end
 
-function Distributions.logpdf(
+function logpdf(
     m::Model,
     state::Dict{Symbol, <:Any};
     kwargs...
